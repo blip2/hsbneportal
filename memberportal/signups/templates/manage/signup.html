@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Manage Signup{% endblock page_title %}
+
+{% block content %}
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-12">
+          <a href="{% url 'signups.edit' id=signup.id %}" class="btn btn-primary pull-right" style="margin-left: 7px;">Edit &raquo;</a>
+          <a href="{% url 'signups.add-slot' id=signup.id %}" class="btn btn-success pull-right" style="margin-left: 7px;">Add Slot &raquo;</a>
+          <a href="{% url 'signups.export' id=signup.id %}" class="btn btn-warning pull-right">Export All &raquo;</a>
+          <h2>{{ signup.name }}</h2>
+
+          <dl class="dl-horizontal">
+            <dt>Description</dt>
+            <dd><p>{{ signup.description }}</p></dd>
+            <dt>Dates</dt>
+            <dd><p>{{ signup.time_period }}</p></dd>
+            <dt>Contact Email</dt>
+            <dd><p>{{ signup.contact }}</p></dd>
+            {% if signup.payment or signup.member_payment %}
+            <dt>Payment</dt>
+              {% if signup.member_payment %}
+                {% if signup.payment == signup.member_payment %}
+                  <dd>&pound;{{ signup.payment }}</dd>
+                {% else %}
+                  <dd>&pound;{{ signup.member_payment }} (members)</dd>
+                  <dd>&pound;{{ signup.payment }} (non-members)</dd>
+                {% endif %}
+              {% else %}
+                <dd>Free for Sedos members</dd>
+                <dd>&pound;{{ signup.payment }} (non-members)</dd>
+              {% endif %}
+            {% if signup.force_online_payment %}<dd>Payment must be made in advance online</dd>{% else %}
+            <dd>Payment can be made online or on the door</dd>{% endif %}
+            {% endif %}
+            {% if signup.member_only %}This is a member-only event.{% endif %}
+            {% if signup.audition_notice %}<dt>Audition Notice</dt>
+            <dd><a href="{{ signup.audition_notice }}">Link</a></dd>{% endif %}
+            {% if signup.confirm_info %}<dt>Confirmation Info</dt>
+            <dd><p>{{ signup.confirm_info }}</p></dd>{% endif %}
+            <dt>Signup Visible</dt>
+            <dd>{% if signup.visible %}Yes{% else %}<span class="text-danger">No</span>{% endif %}</dd>
+          </dl>
+
+
+          <div class="panel panel-default">
+              <div class="panel-body">
+                <table class="table table-striped table-condensed">
+                  <thead><th>Start</th><th>End</th><th>Location</th><th>Places</th><th>Confirmed</th><th>Pending / Interest</th><th></th></thead>
+                  <tbody>
+                    {% for slot in slots %}
+                    <tr>
+                      <td>{{ slot.start|date:"d M Y H:i" }}</td>
+                      <td>{{ slot.end|date:"H:i" }}</td>
+                      <td>{{ slot.location }}</td>
+                      <td>{% if slot.places %}{{ slot.places }}{% else %}Unlimited{% endif %}</td>
+                      <td>{{ slot.confirmed_places }}</td>
+                      <td>{{ slot.other_places.count }}</td>
+                      <td><a class="btn btn-xs btn-danger" href="{% url 'signups.manage-slot' id=slot.id %}" role="button">Manage &raquo;</a></td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                  <tfoot><th></th><th></th><th></th><th>{% if signup.total_places %}{{ signup.total_places }}{% else %}Unlimited{% endif %}</th><th>{{ signup.total_confirmed }}</th><th></th><th></th></tfoot>
+                </table>
+              </div>
+
+          </div>
+          <a href="{% url 'signups.list' %}" class="btn btn-default">&laquo; Back to signup list</a>
+        </div>
+      </div>
+    </div>
+{% endblock %}

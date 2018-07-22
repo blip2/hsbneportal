@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Modify Place{% endblock page_title %}
+
+{% block content %}
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-12">
+          <h2>{{ place.slot.signup.name }}</h2>
+
+          <div>
+            <p>You are moving <b>{{ place.member }}</b> from their current slot.</p>
+            <p>They will receive an email informing them of the change.</p>
+          </div>
+
+          <div class="panel panel-default">
+              <div class="panel-body">
+                <table class="table table-striped table-condensed">
+                  <thead><th>Start</th><th>End</th><th>Location</th><th>Places</th><th>Confirmed</th><th>Pending / Interest</th><th></th></thead>
+                  <tbody>
+                    {% for slot in slots %}
+                    <tr>
+                      <td>{{ slot.start|date:"d M Y H:i" }}</td>
+                      <td>{{ slot.end|date:"H:i" }}</td>
+                      <td>{{ slot.location }}</td>
+                      <td>{% if slot.places %}{{ slot.places }}{% else %}Unlimited{% endif %}</td>
+                      <td>{{ slot.confirmed_places }}</td>
+                      <td>{{ slot.other_places.count }}</td>
+                      <td><a class="btn btn-xs btn-default" href="{% url 'signups.move-place' id=place.id slot=slot.id %}" role="button">Move here &raquo;</a></td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+
+          </div>
+          <a href="{% url 'signups.manage-slot' id=place.slot.id %}" class="btn btn-default">&laquo; Back to slot</a>
+        </div>
+      </div>
+    </div>
+{% endblock %}

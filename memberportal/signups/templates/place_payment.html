@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block js %}<script type="text/javascript" src="https://js.stripe.com/v2/"></script>
+
+<script type="text/javascript">
+  Stripe.setPublishableKey('{{ stripekey }}');
+
+ var stripeResponseHandler = function(status, response) {
+   var $form = $('#payment-form');
+   if (response.error) {
+     $form.find('.payment-errors').text(response.error.message).show();
+     $form.find('button').prop('disabled', false);
+   } else {
+     var token = response.id;
+     $form.append($('<input type="hidden" name="stripeToken" />').val(token));
+     $form.get(0).submit();
+   }
+ };
+ jQuery(function($) {
+   $('#payment-form').submit(function(e) {
+     var $form = $(this);
+     $form.find('button').prop('disabled', true);
+     Stripe.card.createToken($form, stripeResponseHandler);
+     return false;
+   });
+ });
+</script>
+{% endblock js %}
+
+{% block page_title %}Payment{% endblock page_title %}
+
+{% block content %}
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-12">
+          <h2>{{ slot.signup.name }}</h2>
+
+            <div class="col-lg-6">
+              <div class="panel panel-default">
+                <div class="panel-heading" role="tab"><h3 style="margin: 0;">Make Payment</h3></div>
+                <div class="panel-body">
+                  <form action="" method="POST" id="payment-form" class="form-horizontal">{% csrf_token %}
+                  <div class="alert alert-info">You must make a payment online before your place is confirmed.</div>
+                  <p class="alert alert-danger payment-errors" {% if not error %}style="display: none;"{% endif %}>{{ error }}</p>
+                      <div class="form-group">
+                        <label for="card-number" class="col-sm-3 control-label">Card Number</label>
+                        <div class="col-sm-9">
+                          <input type="text" class="form-control" data-stripe="number"/>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                          <label for="card-cvc" class="col-sm-3 control-label">CVC</label>
+                          <div class="col-sm-3">
+                            <input type="text" class="form-control" autocomplete="off" data-stripe="cvc" />
+                          </div>
+                      </div>
+                      <div class="form-group">
+                          <label for="card-expiry-month" class="col-sm-3 control-label">Expiration</label>
+                          <div class="col-sm-3"><input type="text" class="form-control" data-stripe="exp-month" placeholder="MM" /></div>
+                          <div class="col-sm-1">/</div>
+                          <div class="col-sm-3"><input type="text" class="form-control" data-stripe="exp-year" placeholder="YYYY" /></div>
+                      </div>
+                      <div class="form-group">
+                        <div class="col-sm-offset-3"><button type="submit" class="submit-button btn btn-success">Make Payment</button></div>
+                      </div>
+                  </form>
+                  <div></div>
+                </div>
+              </div>
+            </div>
+
+          <div class="row">
+            <div class="col-lg-6">
+              <div class="panel panel-default">
+                <div class="panel-heading" role="tab"><h3 style="margin: 0;">Place Details</h3></div>
+                <div class="panel-body">
+                  {% include 'snippets/slot_info.html' %}
+                  {% include 'snippets/place_info.html' %}
+                  <div class="alert alert-info">If you do not believe you need to make a payment (i.e. you think you should be listed as a member) please email <a href="mailto:membership@sedos.co.uk">membership@sedos.co.uk</a> please make sure you include the email you used to signup with (shown above).</div>
+                </div>
+              </div>
+            </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

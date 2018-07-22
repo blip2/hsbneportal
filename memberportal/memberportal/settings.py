@@ -31,7 +31,8 @@ ALLOWED_HOSTS = ["members.hsbne.org", "localhost", "127.0.0.1", "*"]
 # Application definition
 
 INSTALLED_APPS = [
-    "portal",
+    'portal',
+    'signups',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

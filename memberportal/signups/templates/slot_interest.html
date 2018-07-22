@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Slot Selection{% endblock page_title %}
+
+{% block content %}
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-12">
+          <h2>{{ slot.signup.name }}</h2>
+
+          <div class="row">
+            <form action="{% url 'signups.interest' id=slot.id %}" method="post" class="form-horizontal" role="form">{% csrf_token %}
+            <div class="col-lg-6">
+              <div class="panel panel-default">
+                <div class="panel-heading" role="tab"><h3 style="margin: 0;">Select Slots</h3></div>
+                <div class="panel-body">
+                  <p class="alert alert-info">Please select the slots that you wish to register interest in attending. You will be added to a queue and assigned to the first space that becomes available.</p>
+                  <p class="alert alert-warning">Only select slots that you are available for, if you are assigned a slot you then cannot attend you will start at the back of the queue.</p>
+                  <table class="table table-condensed">
+                    <thead><th>Start</th><th>End</th><th></th></thead>
+                    <tbody>
+                      {% for date,slots in ordered.items %}
+                      <tr class="active"><td colspan="3">{{ date|date:"jS F Y" }}</td></tr>
+                      {% for slot in slots %}
+                      <tr>
+                        <td>{{ slot.start|date:"H:i" }}</td>
+                        <td>{{ slot.end|date:"H:i" }}</td>
+                        <td><label><input type="checkbox" name="slot_{{ slot.id }}"></label></td>
+                      </tr>
+                      {% endfor %}
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                  <a href="{% url 'signups.slot-list' id=slot.signup.id %}" class="btn btn-default">&laquo; Back</a>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-6">
+              <div class="panel panel-default">
+                <div class="panel-heading" role="tab"><h3 style="margin: 0;">Contact Details</h3></div>
+                <div class="panel-body">
+                  <p class="alert alert-info">If you are a member please enter your Sedos membership email (this should be the email you receive the newsletter to).</p>
+                  {% if more %}<p class="alert alert-warning">We need some more information to complete your signup.</p>{% endif %}
+                    {% for field in form %}
+                      {% include 'snippets/form_field.html' %}
+                    {% endfor %}
+                    <p class="alert alert-warning">You will be sent an email with a link to confirm (normally sent instantly). Your interest will not be registered until you visit the link.</p>
+                    <div class="form-group">
+                      <div class="col-sm-offset-3 col-sm-9">
+                        <button type="submit" class="btn btn-success">Signup &raquo;</button>
+                      </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+            </form>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

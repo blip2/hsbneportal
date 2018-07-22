@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-12">
+          <a href="" class="btn btn-success pull-right hidden">Export All &raquo;</a>
+          <h2>{{ signup.name }}</h2>
+
+          <div class="panel panel-default">
+              <div class="panel-body">
+                <table class="table table-condensed">
+                  <tbody>
+                    {% for slot in slots %}
+                    {% if slot.places > 1 %}
+                    <tr class="active">
+                      <td>{{ slot.start|date:"D d M Y H:i" }}</td>
+                      <td>{{ slot.end|date:"H:i" }}</td>
+                      <td>{{ slot.location }}</td>
+                      <td>{% if slot.places %}{{ slot.places }} place{{ slot.places|pluralize }}{% else %}Unlimited{% endif %}</td>
+                      <td>{{ slot.confirmed_places }} confirmed</td>
+                      <td>{{ slot.other_places.count }} total</td>
+                    </tr>
+                    {% for place in slot.places_export %}
+                      <tr class="{% if place.to_pay %}bg-danger{% elif place.status == '0' %}warning{% endif %}">
+                        {% include "snippets/place_row.html" %}
+                      </tr>
+                    {% endfor %}
+                    {% else %}
+                    {% for place in slot.places_export %}
+                    <tr class="{% if place.to_pay %}bg-danger{% elif place.status == '0' %}warning{% endif %}">
+                    <td>{{ slot.start|date:"D d M Y H:i" }}</td>
+                    {% include "snippets/place_row.html" %}
+                    </tr>
+                    {% empty %}
+                    <tr>
+                    <td>{{ slot.start|date:"D d M Y H:i" }}</td>
+                    <td>Empty</td><td></td><td></td><td></td><td></td><td></td>
+                    </tr>
+                    {% endfor %}
+                    {% endif %}
+                    {% endfor %}
+                  </tbody>
+                  <tfoot><th></th><th></th><th></th><th></th><th>{{ signup.total_confirmed }} confirmed</th><th></th><th></th></tfoot>
+                </table>
+              </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+{% endblock %}

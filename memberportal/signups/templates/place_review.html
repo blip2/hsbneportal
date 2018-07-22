@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Review Place{% endblock page_title %}
+
+{% block content %}
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-12">
+          <h2>{{ slot.signup.name }}</h2>
+
+          <div class="row">
+            <div class="col-xs-12">
+              <div class="panel panel-default">
+                <div class="panel-heading" role="tab"><h3 style="margin: 0;">Place Details</h3></div>
+                <div class="panel-body">
+                  <div>
+                    {% if place.to_pay %}<p class="alert alert-info">You still need to make a payment for this slot. If you do not pay online you will need to pay in cash on the day.</p>
+                    <p><a href="{% url 'signups.place-payment' guid=place.guid %}" class="btn btn-success">Make Payment</a></p>{% endif %}
+                    {% if place.can_cancel %}<p class="alert alert-danger">Note: Canceling your place is final and your place may be automatically assigned to someone else. If you have made a payment it will <b>not be refunded</b> however the payment will be transferred if you are confirmed in a different slot for the same signup.</p>
+                    <form action="{% url 'signups.place-review' guid=place.guid %}" method="post" class="form-horizontal" role="form">
+                    {% csrf_token %}
+                    <input type="hidden" name="cancel" value="cancel" />
+                    <p><button type="submit" class="btn btn-danger">Cancel Place</button></p>
+                    </form>
+                    {% endif %}
+                  </div>
+                  {% if place.status == '2' and slot.signup.confirm_info %}
+                  <div class="alert alert-info">
+                    <h3 style="margin-top: 0;">Important Information</h3>
+                    <p>{{ slot.signup.confirm_info|linebreaksbr|urlize }}</p>
+                  </div>
+                  {% endif %}
+                  {% include 'snippets/slot_info.html' %}
+                  {% include 'snippets/place_info.html' %}
+                </div>
+              </div>
+            </div>
+          </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

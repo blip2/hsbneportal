@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Edit Signup{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-12 col-md-6 col-md-offset-3">
+          <form action="{% url 'signups.edit' signup.id %}" method="post" class="form-horizontal" role="form">
+          {% csrf_token %}
+            <fieldset>
+              <legend><span class="col-sm-offset-1">Edit Signup</span></legend>
+            {% for field in form %}
+                {% include 'snippets/form_field.html' %}
+            {% endfor %}
+            <div class="form-group">
+              <button type="submit" id="check-go" class="btn btn-success pull-right">Save »</button>
+            </div>
+            </fieldset>
+        </form>
+        </div>
+      </div>
+    </div>
+
+{% endblock %}

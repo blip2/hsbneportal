@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Slot Signup{% endblock page_title %}
+
+{% block content %}
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-12">
+          <h2>{{ slot.signup.name }}</h2>
+
+          <div class="row">
+            <div class="col-lg-6">
+              <div class="panel panel-default">
+                <div class="panel-heading" role="tab"><h3 style="margin: 0;">Slot Details</h3></div>
+                <div class="panel-body">
+                  {% include 'snippets/slot_info.html' %}
+                  <a href="{% url 'signups.slot-list' id=slot.signup.id %}" class="btn btn-default">&laquo; Select a different slot</a>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-6">
+              <div class="panel panel-default">
+                <div class="panel-heading" role="tab"><h3 style="margin: 0;">Contact Details</h3></div>
+                <div class="panel-body">
+                  <p class="alert alert-info">If you are a member please enter your Sedos membership email (this should be the email you receive the newsletter to).</p>
+                  {% if more %}<p class="alert alert-warning">We need some more information to complete your signup.</p>{% endif %}
+                    <form action="{% url 'signups.slot-signup' id=slot.id %}" method="post" class="form-horizontal" role="form">
+                    {% csrf_token %}
+                    {% for field in form %}
+                      {% include 'snippets/form_field.html' %}
+                    {% endfor %}
+                    <p class="alert alert-warning">You will be sent an email with a link to confirm your place (normally sent instantly). Your place is not confirmed until you visit the link.</p>
+                    <div class="form-group">
+                      <div class="col-sm-offset-3 col-sm-9">
+                        <button type="submit" class="btn btn-success">Signup &raquo;</button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

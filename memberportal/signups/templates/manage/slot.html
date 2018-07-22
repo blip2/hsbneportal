@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Manage Places{% endblock page_title %}
+
+{% block content %}
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-12">
+          <h2>{{ slot.signup.name }}</h2>
+          <a href="{% url 'signups.edit-slot' id=slot.id %}" class="btn btn-primary pull-right" style="margin-left: 7px;">Edit &raquo;</a>
+
+          <dl class="dl-horizontal">
+            <dt>Date</dt>
+            <dd>{{ slot.start|date:"d M Y" }}</dd>
+            <dt>Start</dt>
+            <dd>{{ slot.start|date:"H:i" }}</dd>
+            <dt>End</dt>
+            <dd>{{ slot.end|date:"H:i" }}</dd>
+            <dt>Location</dt>
+            <dd>{{ slot.location }}</dd>
+            {% if slot.signup.payment or slot.signup.member_payment %}
+            <dt>Payment</dt>
+              {% if slot.signup.member_payment %}
+                {% if slot.signup.payment == slot.signup.member_payment %}
+                  <dd>&pound;{{ slot.signup.payment }}</dd>
+                {% else %}
+                  <dd>&pound;{{ slot.signup.member_payment }} (members)</dd>
+                  <dd>&pound;{{ slot.signup.payment }} (non-members)</dd>
+                {% endif %}
+              {% else %}
+                <dd>Free for Sedos members</dd>
+                <dd>&pound;{{ slot.signup.payment }} (non-members)</dd>
+              {% endif %}
+            {% if slot.signup.force_online_payment %}<dd>Payment must be made in advance online</dd>{% endif %}
+            <dt>Places Confirmed</dt>
+            <dd>{{ slot.confirmed_places }} of {% if slot.places %}{{ slot.places }}{% else %}Unlimited{% endif %}</dd>
+            {% endif %}
+          </dl>
+
+          <div class="panel panel-default">
+              <div class="panel-body">
+                <table class="table table-condensed">
+                  <thead>{% if perms.members.change_members %}<th></th>{% endif %}<th>Name</th><th>Email</th><th>Phone</th><th>Status</th><th>Member</th><th>Payment</th><th></th></thead>
+                  <tbody>
+                    {% for place in places %}
+                    <tr class="{% if place.to_pay %}bg-danger{% elif place.status == '3' %}bg-warning{% endif %}">
+                      <td>{% if perms.members.change_members %}{% with member=place.member %}{% include "snippets/member_icons.html" %}{% endwith %}{% endif %} <a href="{% url 'signups.place-review' guid=place.guid %}" style="margin-right: 5px;"><img src="/static/img/back.png" alt="Place" title="Place" /></a> <div style="margin-right: 5px;"><img data-toggle="tooltip" src="/static/img/clock.png" title="Created: {{ place.created }} Changed: {{ place.changed }}" /></div> </td>
+                      {% include "snippets/place_row.html" %}
+                      <td>
+                        <div class="btn-group">
+                          <button type="button" class="btn {% if place.status != '3' %}btn-danger {% endif %}btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Actions <span class="caret"></span>
+                          </button>
+                          <ul class="dropdown-menu">
+                            {% if place.to_pay %}<li><a href="{% url 'signups.manage-place' id=place.id action=1 %}">Mark Paid (Cash)</a></li>{% endif %}
+                            {% if place.status != '2' %}<li><a href="{% url 'signups.manage-place' id=place.id action=2 %}">Confirm Place</a></li>{% endif %}
+                            {% if place.status != '3' and place.slot.signup.slot_set.all.count > 1 %}<li><a href="{% url 'signups.manage-place' id=place.id action=4 %}">Move Slot</a></li>{% endif %}
+                            {% if place.status != '3' %}<li><a href="{% url 'signups.manage-place' id=place.id action=5 %}">Resend Email</a></li<li><a href="{% url 'signups.manage-place' id=place.id action=3 %}">Cancel Place</a></li>{% endif %}
+                          </ul>
+                        </div>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+
+          </div>
+          <a href="{% url 'signups.manage' id=slot.signup.id %}" class="btn btn-default">&laquo; Back to signup</a>
+        </div>
+      </div>
+    </div>
+{% endblock %}

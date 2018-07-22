@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Sign Up List{% endblock page_title %}
+
+{% block content %}
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-12">
+          {% if perms.signups.manage_signups or perms.signups.manage_all_signups %}<a class="btn btn-success pull-right" href="{% url 'signups.add' %}" role="button">Create &raquo;</a>{% endif %}
+          <h2>Audition/Event Signups</h2>
+          {% for signup in signups %}
+          {% if signup.visible or user in signup.admin.all or perms.signups.manage_signups %}
+          <div class="col-lg-6 panel panel-default">
+            <h2>{{ signup.name }}{% if not signup.visible %} <span style="font-size: 0.5em;">(not visible)</span>{% endif %}</h2>
+            <p><b>{{ signup.time_period }}</b></p>
+            <p>{{ signup.description|truncatewords:50|linebreaksbr }}</p>
+            <p><a class="btn btn-primary" href="{% url 'signups.slot-list' id=signup.id %}" role="button">Signup &raquo;</a>
+            {% if user in signup.admin.all or perms.signups.manage_signups %}<a class="btn btn-danger" href="{% url 'signups.manage' id=signup.id %}" role="button">Manage &raquo;</a>{% endif %}
+            </p>
+          </div>
+          {% endif %}
+          {% empty %}
+          <div class="alert alert-warning">There are currently no signups available</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+{% endblock %}
